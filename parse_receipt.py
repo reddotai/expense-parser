@@ -72,7 +72,7 @@ def extract_text_tesseract(image_path: str) -> str:
     return text
 
 
-def parse_with_openai(image_path: str, config: Dict[str, Any], api_key: str) -> Dict[str, Any]:
+def parse_with_openai(image_path: str, config: Dict[str, Any], api_key: str, verbose: bool = False) -> Dict[str, Any]:
     """Parse receipt using OpenAI Vision API."""
     client = openai.OpenAI(api_key=api_key)
     
@@ -389,12 +389,21 @@ def main():
         '--output',
         help='Override output folder'
     )
+    parser.add_argument(
+        '--verbose', '-v',
+        action='store_true',
+        help='Show detailed processing information'
+    )
     
     args = parser.parse_args()
     
     # Load config
-    print(f"Loading config from: {args.config}")
+    if args.verbose:
+        print(f"🔧 Loading config from: {args.config}")
     config = load_config(args.config)
+    
+    if args.verbose:
+        print(f"⚙️  Settings: {json.dumps(config, indent=2)}")
     
     if args.output:
         config['output_folder'] = args.output
@@ -417,15 +426,23 @@ def main():
         sys.exit(1)
     
     print(f"Found {len(files)} receipt(s) to process")
+    if args.verbose:
+        print(f"📁 Files: {[f.name for f in files]}")
     
     # Process each receipt
     records = []
     for i, file_path in enumerate(files, 1):
         print(f"\n[{i}/{len(files)}] Processing: {file_path.name}")
         
+        if args.verbose:
+            print(f"🖼️  Image: {file_path}")
+        
         try:
             # Parse receipt
             data = parse_receipt(str(file_path), config)
+            
+            if args.verbose:
+                print(f"📊 Raw extraction: {json.dumps(data, indent=2)}")
             
             # Validate
             warnings = validate_receipt(data, config)
