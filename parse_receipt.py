@@ -428,12 +428,49 @@ def save_output(records: List[Dict[str, Any]], config: Dict[str, Any]):
     elif merge_strategy == 'monthly':
         filename = f"expenses_{datetime.now().strftime('%Y-%m')}.xlsx"
     else:
-        filename = f"expenses_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
+        # For 'false' or any other value, use timestamp to avoid overwriting
+        filename = f"expenses_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
     
     output_path = os.path.join(output_folder, filename)
     
+    # Check if file exists and merge is enabled (not false)
+    existing_records = []
+    if merge_strategy != 'false' and os.path.exists(output_path):
+        try:
+            output_format = config.get('output_format', 'excel')
+            if output_format == 'excel':
+                existing_df = pd.read_excel(output_path, sheet_name='Expenses')
+                existing_records = existing_df.to_dict('records')
+            elif output_format == 'csv':
+                csv_path = output_path.replace('.xlsx', '.csv')
+                if os.path.exists(csv_path):
+                    existing_df = pd.read_csv(csv_path)
+                    existing_records = existing_df.to_dict('records')
+            elif output_format == 'json':
+                json_path = output_path.replace('.xlsx', '.json')
+                if os.path.exists(json_path):
+                    with open(json_path, 'r') as f:
+                        existing_records = json.load(f)
+            print(f"  Found {len(existing_records)} existing receipts, merging...")
+        except Exception as e:
+            print(f"  Warning: Could not read existing file: {e}")
+    
+    # Combine existing and new records
+    all_records = existing_records + records
+    
+    # Remove duplicates based on file_name and processed_at (if same receipt processed twice)
+    seen = set()
+    unique_records = []
+    for record in all_records:
+        key = (record.get('file_name'), record.get('processed_at'))
+        if key not in seen:
+            seen.add(key)
+            unique_records.append(record)
+    
+    all_records = unique_records
+    
     # Create DataFrame
-    df = pd.DataFrame(records)
+    df = pd.DataFrame(all_records)
     
     # Reorder columns based on config
     columns = config.get('output_columns', [])
@@ -466,14 +503,14 @@ def save_output(records: List[Dict[str, Any]], config: Dict[str, Any]):
     elif output_format == 'json':
         output_path = output_path.replace('.xlsx', '.json')
         with open(output_path, 'w') as f:
-            json.dump(records, f, indent=2)
+            json.dump(all_records, f, indent=2)
     
-    print(f"✓ Saved {len(records)} receipts to: {output_path}")
+    print(f"✓ Saved {len(records)} receipts ({len(all_records)} total) to: {output_path}")
     
     # Generate IRAS export if enabled
     iras_config = config.get('iras_export', {})
     if iras_config.get('enabled', False):
-        iras_path = save_iras_export(records, config, output_folder)
+        iras_path = save_iras_export(all_records, config, output_folder)
         print(f"✓ IRAS GST export: {iras_path}")
     
     return output_path

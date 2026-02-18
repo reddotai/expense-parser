@@ -48,6 +48,13 @@ def check_dependencies():
 
 def check_api_key():
     """Check if API key is set."""
+    # Try to load from .env file first
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except ImportError:
+        pass  # dotenv not installed, check environment variables only
+    
     openai_key = os.getenv('OPENAI_API_KEY')
     anthropic_key = os.getenv('ANTHROPIC_API_KEY')
     
