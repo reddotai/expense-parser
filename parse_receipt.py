@@ -8,6 +8,8 @@ import os
 import sys
 import json
 import argparse
+import tempfile
+import shutil
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
@@ -60,7 +62,8 @@ def resize_image(image_path: str, max_size: int = 4096, quality: str = "medium")
         img = img.resize(new_size, Image.Resampling.LANCZOS)
     
     # Save to temp
-    temp_path = f"/tmp/resized_{os.path.basename(image_path)}"
+    temp_dir = tempfile.gettempdir()
+    temp_path = os.path.join(temp_dir, f"resized_{os.path.basename(image_path)}")
     img.save(temp_path, quality=95)
     return temp_path
 

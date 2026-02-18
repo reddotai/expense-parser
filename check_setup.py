@@ -32,7 +32,7 @@ def check_pip():
 
 def check_dependencies():
     """Check if required packages are installed."""
-    required = ['yaml', 'pandas', 'PIL', 'openpyxl', 'xlsxwriter']
+    required = ['yaml', 'pandas', 'PIL', 'openpyxl', 'xlsxwriter', 'pytesseract']
     missing = []
     
     for package in required:
