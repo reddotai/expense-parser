@@ -215,7 +215,7 @@ If any field is not visible, use null or 0. Be precise with numbers.
 Set confidence based on: high=crystal clear, medium=readable but some ambiguity, low=hard to read or missing info."""
 
     response = client.messages.create(
-        model=config.get('model', 'claude-3-haiku-20240307'),
+        model=config.get('model', 'claude-3-5-haiku-20241022'),
         max_tokens=4096,
         temperature=config.get('temperature', 0.1),
         messages=[
