@@ -1,0 +1,230 @@
+# Expense Parser Configuration
+# Edit this file to customize behavior — no coding needed!
+
+# ============================================
+# OUTPUT SETTINGS
+# ============================================
+
+# Format: excel, csv, or json
+output_format: excel
+
+# Where to save output files (relative or absolute path)
+output_folder: ./output
+
+# Merge all receipts into one file, or create separate files
+# Options: daily, weekly, monthly, single, false
+merge_files: daily
+
+# Date format in output files
+# Options: DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD
+date_format: DD/MM/YYYY
+
+# ============================================
+# CURRENCY & TAX
+# ============================================
+
+# Currency detection: auto or specify (SGD, USD, MYR, etc.)
+currency: auto
+
+# Default currency if auto-detection fails
+default_currency: SGD
+
+# Tax rate for your region (0.09 = 9%)
+# Singapore GST: 0.09
+# Malaysia SST: 0.10
+# Set to 0 for no tax
+tax_rate: 0.09
+
+# Whether to extract tax separately or include in total
+tax_inclusive: true
+
+# ============================================
+# EXPENSE CATEGORIES
+# Customize these for your business/personal needs
+# ============================================
+
+categories:
+  - Meals & Entertainment
+  - Transport
+  - Office Supplies
+  - Software & Subscriptions
+  - Professional Services
+  - Marketing & Advertising
+  - Utilities
+  - Rent
+  - Equipment
+  - Travel
+  - Medical
+  - Others
+
+# Category keywords for auto-detection
+# The parser uses these to guess the category
+category_keywords:
+  Meals & Entertainment:
+    - restaurant
+    - cafe
+    - coffee
+    - food
+    - meal
+    - lunch
+    - dinner
+    - grab food
+    - foodpanda
+    - deliveroo
+  
+  Transport:
+    - grab
+    - gojek
+    - taxi
+    - uber
+    - comfortdelgro
+    - smrt
+    - sbs
+    - mrt
+    - bus
+    - petrol
+    - esso
+    - shell
+    - caltex
+  
+  Office Supplies:
+    - stationery
+    - paper
+    - printer
+    - ink
+    - notebook
+    - pen
+    - popular
+    - daiso
+  
+  Software & Subscriptions:
+    - adobe
+    - microsoft
+    - google
+    - slack
+    - notion
+    - zoom
+    - canva
+    - figma
+    - github
+    - aws
+    - cloud
+  
+  Professional Services:
+    - legal
+    - accounting
+    - audit
+    - consulting
+    - advisory
+  
+  Marketing & Advertising:
+    - facebook
+    - meta
+    - google ads
+    - linkedin
+    - twitter
+    - x.com
+    - influencer
+    - campaign
+
+# ============================================
+# VENDOR MAPPING
+# Normalize vendor names (e.g., "McD" → "McDonald's")
+# ============================================
+
+vendor_aliases:
+  McD: McDonald's
+  Macs: McDonald's
+  SB: Starbucks
+  KFC: Kentucky Fried Chicken
+  "7-11": 7-Eleven
+  "7-ELEVEn": 7-Eleven
+  Cold Storage: Cold Storage (Dairy Farm)
+  NTUC: NTUC FairPrice
+  "Fairprice": NTUC FairPrice
+  Grab: Grab Singapore
+  Gojek: Gojek Singapore
+
+# ============================================
+# AI MODEL SETTINGS
+# ============================================
+
+# Model provider: openai, anthropic, or local
+model_provider: openai
+
+# Model name
+# OpenAI: gpt-4o, gpt-4o-mini
+# Anthropic: claude-3-5-sonnet-20241022, claude-3-haiku-20240307
+model: gpt-4o-mini
+
+# Temperature (0.0 = deterministic, 1.0 = creative)
+# Keep low for receipt parsing
+temperature: 0.1
+
+# ============================================
+# PROCESSING OPTIONS
+# ============================================
+
+# Maximum image size (larger images are resized)
+max_image_size: 4096
+
+# Image quality: low, medium, high
+# Higher quality = better accuracy but slower
+image_quality: medium
+
+# Retry failed receipts
+max_retries: 3
+
+# Timeout per receipt (seconds)
+timeout: 30
+
+# ============================================
+# VALIDATION RULES
+# ============================================
+
+# Flag receipts with suspicious data
+validation:
+  # Flag if total exceeds this amount
+  max_amount: 10000
+  
+  # Flag if date is in the future
+  no_future_dates: true
+  
+  # Flag if date is older than this many days
+  max_age_days: 365
+  
+  # Require these fields
+  required_fields:
+    - date
+    - vendor
+    - total
+
+# ============================================
+# OUTPUT COLUMNS
+# Customize which columns appear in output
+# ============================================
+
+output_columns:
+  - date
+  - vendor
+  - category
+  - description
+  - subtotal
+  - tax
+  - total
+  - currency
+  - payment_method
+  - receipt_number
+  - items_count
+  - file_name
+  - processed_at
+
+# ============================================
+# NOTIFICATIONS (Optional)
+# ============================================
+
+# Play sound when done (Mac only)
+play_sound: false
+
+# Show desktop notification when done
+notification: false

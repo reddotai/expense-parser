@@ -1,0 +1,43 @@
+# Expense Parser
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+
+# Output folder (user data)
+output/
+*.xlsx
+*.csv
+*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Receipts (user data)
+receipts/
+*.jpg
+*.jpeg
+*.png
+*.pdf
+
+# Temp files
+/tmp/
+*.tmp
