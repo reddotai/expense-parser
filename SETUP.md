@@ -107,12 +107,16 @@ You should see something like: `Python 3.12.0`
    
    **Option A - Use virtual environment (Recommended):**
    ```bash
+   # Install venv if not already installed
+   sudo apt install python3-venv
+   
+   # Create and activate virtual environment
    python3 -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
    ```
    
-   **Option B - Use the --break-system-packages flag:**
+   **Option B - Use the --break-system-packages flag (Quickest):**
    ```bash
    pip3 install -r requirements.txt --break-system-packages
    ```
@@ -172,6 +176,11 @@ sudo apt install tesseract-ocr
 
 Then set `model_provider: local` in `config.yaml` (see Step 6).
 
+**Note about Local OCR:**
+- All receipts will show "low confidence" — this is normal for local OCR
+- The data is still usable, but you should review it for accuracy
+- For higher accuracy, use OpenAI or Anthropic (paid options)
+
 ---
 
 ## Step 5: Set Up Your API Key
@@ -219,6 +228,30 @@ Don't worry about breaking anything — you can always download the original aga
 
 5. Check the `output` folder for your Excel file!
    > 📸 *[Screenshot: Excel output with extracted data]*
+
+---
+
+## Step 8: Process Multiple Receipts (Batch Mode)
+
+**Important:** When `merge_files: daily` is set in config.yaml (the default), processing receipts one at a time will overwrite previous receipts from the same day.
+
+**To process multiple receipts without losing data:**
+
+1. Put all receipt images in the `samples/` folder (or create a `receipts/` folder)
+2. Process the entire folder at once:
+   ```bash
+   # Windows
+   python parse_receipt.py ./samples/
+   
+   # Mac
+   python3 parse_receipt.py ./samples/
+   ```
+
+This creates one combined Excel file with all receipts from that day.
+
+**Alternative:** Change `merge_files` in config.yaml:
+- `false` — Creates a separate file for each receipt
+- `single` — Always appends to one file (expenses_all.xlsx)
 
 ---
 
