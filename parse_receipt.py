@@ -263,8 +263,89 @@ def parse_receipt(image_path: str, config: Dict[str, Any]) -> Dict[str, Any]:
             raise ValueError("ANTHROPIC_API_KEY environment variable not set")
         return parse_with_anthropic(image_path, config, api_key)
     
+    elif provider == 'local':
+        # Use local OCR (Tesseract) - no API key needed
+        return parse_with_local_ocr(image_path, config)
+    
     else:
         raise ValueError(f"Unknown model provider: {provider}")
+
+
+def parse_with_local_ocr(image_path: str, config: Dict[str, Any]) -> Dict[str, Any]:
+    """Parse receipt using local Tesseract OCR (no API key required)."""
+    # Extract text using Tesseract
+    raw_text = extract_text_tesseract(image_path)
+    
+    if not raw_text.strip():
+        raise ValueError("No text could be extracted from the image")
+    
+    # Build category list
+    categories = config.get('categories', [])
+    category_list = ", ".join(categories)
+    
+    # Use a simple rule-based approach to extract data
+    lines = raw_text.strip().split('\n')
+    
+    # Try to find vendor (first non-empty line often contains vendor)
+    vendor = "Unknown"
+    for line in lines[:5]:
+        if line.strip() and len(line.strip()) > 2:
+            vendor = line.strip()
+            break
+    
+    # Try to find total (look for $ sign and numbers)
+    total = 0.0
+    for line in reversed(lines):
+        if '$' in line or 'S' in line:
+            import re
+            matches = re.findall(r'[\$S]\s*(\d+\.\d{2})', line)
+            if matches:
+                total = float(matches[-1])
+                break
+    
+    # Try to find date (look for date patterns)
+    date = datetime.now().strftime('%d/%m/%Y')
+    for line in lines:
+        import re
+        # Match DD/MM/YYYY or similar patterns
+        date_match = re.search(r'(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})', line)
+        if date_match:
+            date = date_match.group(1).replace('-', '/')
+            break
+    
+    # Guess category based on keywords
+    category = "Others"
+    text_lower = raw_text.lower()
+    category_keywords = config.get('category_keywords', {})
+    for cat, keywords in category_keywords.items():
+        if any(kw in text_lower for kw in keywords):
+            category = cat
+            break
+    
+    # Calculate GST if applicable
+    tax_rate = config.get('tax_rate', 0.09)
+    tax_inclusive = config.get('tax_inclusive', True)
+    
+    if tax_inclusive and total > 0:
+        subtotal = total / (1 + tax_rate)
+        tax = total - subtotal
+    else:
+        subtotal = total
+        tax = 0
+    
+    return {
+        "vendor": vendor,
+        "date": date,
+        "category": category,
+        "items": [{"description": "Items from receipt", "amount": subtotal}],
+        "subtotal": round(subtotal, 2),
+        "tax": round(tax, 2),
+        "total": round(total, 2),
+        "currency": config.get('default_currency', 'SGD'),
+        "payment_method": "Unknown",
+        "receipt_number": None,
+        "confidence": "low"  # Local OCR is less accurate
+    }
 
 
 def normalize_vendor(vendor: str, aliases: Dict[str, str]) -> str:
