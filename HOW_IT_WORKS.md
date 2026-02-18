@@ -4,6 +4,17 @@ Ever wondered how AI can "read" a receipt? This guide explains the technology be
 
 ---
 
+## 🎯 Quick Overview
+
+```
+📸 Receipt Photo → 🤖 AI "Reads" It → 📊 Excel Output
+      (You)          (The Magic)        (Result)
+```
+
+**Time saved**: ~2 minutes per receipt → ~10 seconds
+
+---
+
 ## The Core Question: How Does AI Read Receipts?
 
 When you look at a receipt, your brain:
@@ -13,6 +24,16 @@ When you look at a receipt, your brain:
 4. **Extracts** meaning (Starbucks, $12.50, Feb 18)
 
 AI does the same thing, but in a different way.
+
+---
+
+## 📍 Singapore Context
+
+This tool is designed for Singapore professionals:
+- **GST**: Automatically calculates 9% (updated 2024)
+- **Currency**: SGD by default, auto-detects others
+- **Local vendors**: Pre-configured aliases for Grab, NTUC, etc.
+- **Date format**: DD/MM/YYYY (Singapore standard)
 
 ---
 
