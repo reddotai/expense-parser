@@ -336,9 +336,9 @@ Here's everything that happens when you process a receipt:
 ## Further Reading
 
 ### Beginner-Friendly
-- [How Computer Vision Works (YouTube)](https://youtube.com)
-- [Introduction to LLMs](https://example.com)
-- [JSON for Non-Programmers](https://example.com)
+- [How Computer Vision Works - YouTube](https://www.youtube.com/results?search_query=computer+vision+explained)
+- [Introduction to Large Language Models](https://www.cloudflare.com/learning/ai/what-is-large-language-model/)
+- [JSON for Beginners](https://www.w3schools.com/js/js_json_intro.asp)
 
 ### Technical Deep Dives
 - [OpenAI Vision API Docs](https://platform.openai.com/docs/guides/vision)

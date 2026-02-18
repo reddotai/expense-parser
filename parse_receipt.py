@@ -20,6 +20,13 @@ import pandas as pd
 from PIL import Image
 import pytesseract
 
+# Load environment variables from .env file if present
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, skip
+
 # Try to import optional dependencies
 try:
     import openai
