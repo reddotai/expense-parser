@@ -185,12 +185,19 @@ OCR (Optical Character Recognition) is older technology that:
 
 **The Reality**: AI isn't perfect. Sometimes it's unsure.
 
-**What we should show you**:
-- High confidence (90%+): Probably correct
-- Medium confidence (70-90%): Double-check this
-- Low confidence (<70%): Likely wrong, needs manual review
+**What we show you**:
+- **High confidence**: Crystal clear receipt, all fields readable
+- **Medium confidence**: Readable but some ambiguity (e.g., handwritten notes)
+- **Low confidence**: Blurry, missing info, or unusual format
 
-**Current limitation**: This tool doesn't expose confidence scores (yet!).
+**How to use confidence scores**:
+| Confidence | Action |
+|------------|--------|
+| High | Trust AI, spot-check |
+| Medium | Quick review of key fields (date, total) |
+| Low | Full manual review recommended |
+
+**In the output**: Check the "confidence" column in your Excel file.
 
 ---
 

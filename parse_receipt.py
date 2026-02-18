@@ -451,6 +451,12 @@ def main():
         action='store_true',
         help='Show detailed processing information'
     )
+    parser.add_argument(
+        '--confidence-threshold',
+        default='medium',
+        choices=['high', 'medium', 'low'],
+        help='Minimum confidence level to accept (default: medium)'
+    )
     
     args = parser.parse_args()
     
@@ -508,9 +514,22 @@ def main():
             
             # Format
             formatted = format_output(data, config, file_path.name)
+            
+            # Check confidence
+            confidence = formatted.get('confidence', 'medium')
+            threshold_map = {'high': 3, 'medium': 2, 'low': 1}
+            confidence_map = {'high': 3, 'medium': 2, 'low': 1}
+            
+            if confidence_map.get(confidence, 2) < threshold_map.get(args.confidence_threshold, 2):
+                print(f"  ⚠ Low confidence ({confidence}) - review recommended")
+            elif confidence == 'low':
+                print(f"  ⚠ Low confidence - review recommended")
+            else:
+                print(f"  ✓ Confidence: {confidence}")
+            
             records.append(formatted)
             
-            print(f"  ✓ {formatted.get('vendor', 'Unknown')} - ${formatted.get('total', 0):.2f}")
+            print(f"    {formatted.get('vendor', 'Unknown')} - ${formatted.get('total', 0):.2f}")
             
         except Exception as e:
             print(f"  ✗ Error: {e}")
@@ -519,7 +538,18 @@ def main():
     # Save output
     if records:
         output_path = save_output(records, config)
+        
+        # Summary
+        low_confidence = [r for r in records if r.get('confidence') == 'low']
+        medium_confidence = [r for r in records if r.get('confidence') == 'medium']
+        
         print(f"\n✓ Done! Processed {len(records)} receipt(s)")
+        print(f"  High confidence: {len(records) - len(low_confidence) - len(medium_confidence)}")
+        if medium_confidence:
+            print(f"  Medium confidence: {len(medium_confidence)} (quick review recommended)")
+        if low_confidence:
+            print(f"  ⚠ Low confidence: {len(low_confidence)} (detailed review needed)")
+            print(f"    Files: {', '.join(r.get('file_name', 'unknown') for r in low_confidence)}")
         
         # Play sound if configured (Mac only)
         if config.get('play_sound', False) and sys.platform == 'darwin':
