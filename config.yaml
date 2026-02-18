@@ -216,8 +216,31 @@ output_columns:
   - payment_method
   - receipt_number
   - items_count
+  - confidence
   - file_name
   - processed_at
+
+# ============================================
+# IRAS GST EXPORT (Singapore)
+# ============================================
+
+# Enable IRAS GST F5-compatible export format
+iras_export:
+  enabled: false
+  # GST treatment codes:
+  # TX = Standard-rated (9%)
+  # ZP = Zero-rated (0%)
+  # OS = Out-of-scope
+  # BL = Disbursement
+  # NR = Non-GST registered vendor
+  default_gst_code: TX
+  # Auto-assign GST codes based on category
+  category_gst_codes:
+    Transport: ZP      # Transport is GST-exempt
+    Meals & Entertainment: TX
+    Groceries: ZP      # Food is GST-exempt
+    Medical: ZP        # Medical is GST-exempt
+    Others: TX
 
 # ============================================
 # NOTIFICATIONS (Optional)

@@ -91,7 +91,7 @@ def parse_with_openai(image_path: str, config: Dict[str, Any], api_key: str, ver
     categories = config.get('categories', [])
     category_list = ", ".join(categories)
     
-    # Build prompt
+    # Build prompt with confidence instruction
     prompt = f"""Extract the following information from this receipt image:
     
 1. Vendor/merchant name
@@ -103,6 +103,7 @@ def parse_with_openai(image_path: str, config: Dict[str, Any], api_key: str, ver
 7. Currency (SGD, USD, etc.)
 8. Payment method (Cash, Visa, Mastercard, GrabPay, etc.)
 9. Receipt/transaction number if visible
+10. Confidence score (high/medium/low) based on clarity of extraction
 
 Classify the expense into ONE of these categories: {category_list}
 
@@ -119,10 +120,12 @@ Return ONLY a JSON object with this exact structure:
     "total": number,
     "currency": "string",
     "payment_method": "string",
-    "receipt_number": "string or null"
+    "receipt_number": "string or null",
+    "confidence": "high|medium|low"
 }}
 
-If any field is not visible, use null or 0. Be precise with numbers."""
+If any field is not visible, use null or 0. Be precise with numbers.
+Set confidence based on: high=crystal clear, medium=readable but some ambiguity, low=hard to read or missing info."""
 
     response = client.chat.completions.create(
         model=config.get('model', 'gpt-4o-mini'),
@@ -154,7 +157,7 @@ If any field is not visible, use null or 0. Be precise with numbers."""
     return json.loads(content.strip())
 
 
-def parse_with_anthropic(image_path: str, config: Dict[str, Any], api_key: str) -> Dict[str, Any]:
+def parse_with_anthropic(image_path: str, config: Dict[str, Any], api_key: str, verbose: bool = False) -> Dict[str, Any]:
     """Parse receipt using Anthropic Claude Vision API."""
     client = anthropic.Anthropic(api_key=api_key)
     
@@ -180,6 +183,7 @@ def parse_with_anthropic(image_path: str, config: Dict[str, Any], api_key: str) 
 7. Currency (SGD, USD, etc.)
 8. Payment method (Cash, Visa, Mastercard, GrabPay, etc.)
 9. Receipt/transaction number if visible
+10. Confidence score (high/medium/low) based on clarity of extraction
 
 Classify the expense into ONE of these categories: {category_list}
 
@@ -196,10 +200,12 @@ Return ONLY a JSON object with this exact structure:
     "total": number,
     "currency": "string",
     "payment_method": "string",
-    "receipt_number": "string or null"
+    "receipt_number": "string or null",
+    "confidence": "high|medium|low"
 }}
 
-If any field is not visible, use null or 0. Be precise with numbers."""
+If any field is not visible, use null or 0. Be precise with numbers.
+Set confidence based on: high=crystal clear, medium=readable but some ambiguity, low=hard to read or missing info."""
 
     response = client.messages.create(
         model=config.get('model', 'claude-3-haiku-20240307'),
@@ -372,7 +378,55 @@ def save_output(records: List[Dict[str, Any]], config: Dict[str, Any]):
             json.dump(records, f, indent=2)
     
     print(f"✓ Saved {len(records)} receipts to: {output_path}")
+    
+    # Generate IRAS export if enabled
+    iras_config = config.get('iras_export', {})
+    if iras_config.get('enabled', False):
+        iras_path = save_iras_export(records, config, output_folder)
+        print(f"✓ IRAS GST export: {iras_path}")
+    
     return output_path
+
+
+def save_iras_export(records: List[Dict[str, Any]], config: Dict[str, Any], output_folder: str):
+    """Save records in IRAS GST F5-compatible format."""
+    iras_config = config.get('iras_export', {})
+    default_code = iras_config.get('default_gst_code', 'TX')
+    category_codes = iras_config.get('category_gst_codes', {})
+    
+    # Map records to IRAS format
+    iras_records = []
+    for record in records:
+        category = record.get('category', 'Others')
+        gst_code = category_codes.get(category, default_code)
+        
+        # Calculate GST amount
+        subtotal = record.get('subtotal', 0) or record.get('total', 0)
+        tax = record.get('tax', 0)
+        total = record.get('total', 0)
+        
+        # For zero-rated or out-of-scope, adjust
+        if gst_code in ['ZP', 'OS']:
+            tax = 0
+        
+        iras_records.append({
+            'Date': record.get('date', ''),
+            'Supplier Name': record.get('vendor', ''),
+            'Supplier GST Reg No': '',  # Would need to be extracted or mapped
+            'Description': record.get('description', ''),
+            'Value Excl GST': subtotal,
+            'GST Amount': tax,
+            'Total Amount': total,
+            'GST Code': gst_code,
+            'Receipt Reference': record.get('receipt_number', ''),
+        })
+    
+    # Save as CSV
+    df = pd.DataFrame(iras_records)
+    iras_path = os.path.join(output_folder, f"iras_gst_export_{datetime.now().strftime('%Y-%m-%d')}.csv")
+    df.to_csv(iras_path, index=False)
+    
+    return iras_path
 
 
 def main():

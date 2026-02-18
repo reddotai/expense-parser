@@ -2,11 +2,29 @@
 
 This guide will get you running in 10 minutes — no coding experience needed.
 
+> 📹 **Prefer video?** Watch our [2-minute setup walkthrough](https://www.youtube.com/your-video-link) (coming soon)
+
+---
+
 ## Prerequisites
 
 - A computer (Windows, Mac, or Linux)
 - Internet connection
 - One receipt image (photo or screenshot)
+
+---
+
+## Quick Start Checklist
+
+Before diving into details, run this quick check:
+
+```bash
+python check_setup.py
+```
+
+This will tell you if your system is ready or what needs fixing.
+
+---
 
 ## Step 1: Install Python
 
@@ -14,11 +32,13 @@ This guide will get you running in 10 minutes — no coding experience needed.
 1. Go to https://python.org/downloads
 2. Click "Download Python 3.12"
 3. Run the installer
-4. **Important:** Check "Add Python to PATH" during installation
+4. **Important:** Check "Add Python to PATH" during installation  
+   > 📸 *[Screenshot: Python installer with "Add to PATH" highlighted]*
 5. Click "Install Now"
 
 ### Mac
 1. Open Terminal (Cmd + Space, type "Terminal")
+   > 📸 *[Screenshot: Spotlight search showing Terminal]*
 2. Run: `xcode-select --install` (if prompted)
 3. Run: `brew install python` (if you have Homebrew)
    
@@ -34,17 +54,28 @@ python --version
 
 You should see something like: `Python 3.12.0`
 
+> 📸 *[Screenshot: Terminal showing Python version check]*
+
+**If you see an error**, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for fixes.
+
+---
+
 ## Step 2: Download This Tool
 
 1. Click the green "Code" button on GitHub
+   > 📸 *[Screenshot: GitHub Code button dropdown]*
 2. Click "Download ZIP"
 3. Extract the ZIP file to your Desktop
 4. Rename the folder to `expense-parser`
+   > 📸 *[Screenshot: Desktop showing expense-parser folder]*
+
+---
 
 ## Step 3: Install Dependencies
 
 ### Windows
 1. Open Command Prompt
+   > 📸 *[Screenshot: Windows Start menu showing Command Prompt]*
 2. Navigate to the folder:
    ```cmd
    cd Desktop\expense-parser
@@ -53,6 +84,7 @@ You should see something like: `Python 3.12.0`
    ```cmd
    pip install -r requirements.txt
    ```
+   > 📸 *[Screenshot: Successful pip install output]*
 
 ### Mac
 1. Open Terminal
@@ -67,6 +99,13 @@ You should see something like: `Python 3.12.0`
 
 Wait for installation to complete (2-3 minutes).
 
+**Expected output:**
+```
+Successfully installed pyyaml pandas pillow openpyxl xlsxwriter pytesseract
+```
+
+---
+
 ## Step 4: Get an API Key
 
 This tool uses AI to read receipts. You need an API key from OpenAI or Anthropic.
@@ -77,6 +116,7 @@ This tool uses AI to read receipts. You need an API key from OpenAI or Anthropic
 2. Create an account
 3. Go to https://platform.openai.com/api-keys
 4. Click "Create new secret key"
+   > 📸 *[Screenshot: OpenAI API keys page]*
 5. Copy the key (starts with `sk-`)
 
 **Cost:** Approximately $0.01-0.02 per receipt (very affordable)
@@ -87,16 +127,21 @@ This tool uses AI to read receipts. You need an API key from OpenAI or Anthropic
 2. Create an account
 3. Get API key (starts with `sk-ant-`)
 
+---
+
 ## Step 5: Set Up Your API Key
 
 1. In the `expense-parser` folder, find `.env.example`
 2. Make a copy and rename it to `.env`
 3. Open `.env` in any text editor (Notepad, TextEdit)
+   > 📸 *[Screenshot: .env file with API key]*
 4. Replace `sk-your-key-here` with your actual API key:
    ```
    OPENAI_API_KEY=sk-abc123youractualkeyhere
    ```
 5. Save the file
+
+---
 
 ## Step 6: Configure (Optional)
 
@@ -108,6 +153,8 @@ Open `config.yaml` in a text editor. You can customize:
 - **Tax rate:** Singapore GST is 9% (already set)
 
 Don't worry about breaking anything — you can always download the original again.
+
+---
 
 ## Step 7: Run Your First Receipt
 
@@ -122,39 +169,57 @@ Don't worry about breaking anything — you can always download the original aga
    # Mac
    python3 parse_receipt.py receipt.jpg
    ```
+   
+   > 📸 *[Screenshot: Terminal showing successful run]*
 
 5. Check the `output` folder for your Excel file!
+   > 📸 *[Screenshot: Excel output with extracted data]*
+
+---
+
+## 🎉 Success Checklist
+
+After your first run, verify:
+
+- [ ] Excel file created in `output/` folder
+- [ ] File contains: date, vendor, amount, category
+- [ ] GST calculated correctly (9% for Singapore)
+- [ ] Categories match your config
+
+If all check out, you're ready to batch process!
+
+---
 
 ## Troubleshooting
 
-### "pip is not recognized"
-- Windows: Reinstall Python and check "Add to PATH"
-- Mac: Use `pip3` instead of `pip`
+### Common First-Run Issues
 
-### "No module named 'openai'"
-- Run the install command again: `pip install -r requirements.txt`
+| Problem | Quick Fix |
+|---------|-----------|
+| "python not recognized" | Reinstall Python, check "Add to PATH" |
+| "pip not recognized" | Use `python -m pip` instead |
+| "No module named 'yaml'" | Run `pip install pyyaml` |
+| "API key not found" | Check `.env` file exists and has key |
+| "File not found" | Make sure you're in the right folder |
 
-### "API key not found"
-- Check that `.env` file exists (not `.env.example`)
-- Verify the key is copied correctly
-- Make sure there's no extra space after the key
+For detailed fixes, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
-### "Error processing image"
-- Try a clearer photo of the receipt
-- Make sure the receipt is readable
-- Check your internet connection
+---
 
 ## Next Steps
 
 - **Batch processing:** Put multiple receipts in a folder and run: `python parse_receipt.py ./receipts/`
 - **Customize categories:** Edit `config.yaml` to match your accounting needs
-- **Integrate:** Import the Excel file into your accounting software
+- **Learn more:** Read [HOW_IT_WORKS.md](HOW_IT_WORKS.md) to understand the AI
+
+---
 
 ## Need Help?
 
-- Open an issue on GitHub
-- Email: [your-email@example.com]
-- Join our community: [Discord/Slack link]
+- 📖 [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Common errors and fixes
+- 🧠 [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — Understanding the AI
+- 📚 [LEARNING.md](LEARNING.md) — Deep dive into the code
+- 🐛 [Open an Issue](https://github.com/reddotai/expense-parser/issues) — Get help from the community
 
 ---
 
