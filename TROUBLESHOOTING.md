@@ -307,6 +307,43 @@ Error: Failed to parse receipt
 
 ---
 
+### ❌ Error: "TypeError: object of type 'float' has no len()" (Excel Output)
+
+**What it looks like:**
+```
+TypeError: object of type 'float' has no len()
+File "parse_receipt.py", line 456, in save_output
+```
+
+**Why it happens:**
+This happens when generating Excel output and some data fields are empty (NaN values).
+
+**Fix:**
+This bug has been fixed in the latest version. If you still see this error:
+
+1. **Update to the latest version:**
+   ```bash
+   git pull origin master
+   ```
+
+2. **Or use CSV output instead** (works immediately):
+   ```bash
+   python parse_receipt.py receipt.jpg --format csv
+   ```
+
+3. **Or manually patch the code** — open `parse_receipt.py` around line 456 and change:
+   ```python
+   # OLD (buggy):
+   max_len = max(df[col].astype(str).map(len).max(), len(col)) + 2
+   
+   # NEW (fixed):
+   col_values = df[col].fillna('').astype(str)
+   max_data_len = col_values.map(len).max()
+   max_len = max(max_data_len, len(col)) + 2
+   ```
+
+---
+
 ### ❌ Issue: Output is empty or wrong
 
 **Symptoms:**

@@ -97,6 +97,26 @@ You should see something like: `Python 3.12.0`
    pip3 install -r requirements.txt
    ```
 
+### Linux (Ubuntu/Debian)
+1. Open Terminal
+2. Navigate to the folder:
+   ```bash
+   cd ~/Desktop/expense-parser
+   ```
+3. **For modern Linux (Ubuntu 24.04+):** You may see an "externally-managed-environment" error. Use one of these options:
+   
+   **Option A - Use virtual environment (Recommended):**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+   
+   **Option B - Use the --break-system-packages flag:**
+   ```bash
+   pip3 install -r requirements.txt --break-system-packages
+   ```
+
 Wait for installation to complete (2-3 minutes).
 
 **Expected output:**
@@ -126,6 +146,31 @@ This tool uses AI to read receipts. You need an API key from OpenAI or Anthropic
 1. Go to https://console.anthropic.com/
 2. Create an account
 3. Get API key (starts with `sk-ant-`)
+
+---
+
+### Option C: No API Key (Local OCR - Free!)
+
+If you don't want to sign up for an API key, you can use local OCR. This is free but less accurate.
+
+**You need to install Tesseract OCR first:**
+
+**Windows:**
+1. Download from https://github.com/UB-Mannheim/tesseract/wiki
+2. Run the installer
+3. Add Tesseract to your PATH
+
+**Mac:**
+```bash
+brew install tesseract
+```
+
+**Linux:**
+```bash
+sudo apt install tesseract-ocr
+```
+
+Then set `model_provider: local` in `config.yaml` (see Step 6).
 
 ---
 
