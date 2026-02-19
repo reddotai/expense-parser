@@ -150,7 +150,7 @@ vendor_aliases:
 # ============================================
 
 # Model provider: openai, anthropic, or local
-model_provider: openai
+model_provider: local
 
 # Model name
 # OpenAI: gpt-4o, gpt-4o-mini

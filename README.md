@@ -207,6 +207,16 @@ By completing this project, you'll understand:
 
 ---
 
+## About This Project
+
+This project is part of **Better Than SkillsFuture** — practical, hands-on learning for Singapore professionals.
+
+**Learn more:** [reddotai.substack.com](https://reddotai.substack.com)
+
+*Built with curiosity, caffeine, and a healthy disregard for boring classroom learning.*
+
+---
+
 ## Privacy & Security
 
 - ✅ **No data leaves your computer** (unless using cloud AI APIs)

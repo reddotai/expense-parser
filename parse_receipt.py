@@ -453,7 +453,10 @@ def save_output(records: List[Dict[str, Any]], config: Dict[str, Any]):
             # Auto-adjust column widths
             worksheet = writer.sheets['Expenses']
             for i, col in enumerate(df.columns):
-                max_len = max(df[col].astype(str).map(len).max(), len(col)) + 2
+                # Handle NaN values by filling with empty string first
+                col_values = df[col].fillna('').astype(str)
+                max_data_len = col_values.map(len).max()
+                max_len = max(max_data_len, len(col)) + 2
                 worksheet.set_column(i, i, min(max_len, 50))
     
     elif output_format == 'csv':
